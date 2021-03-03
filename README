@@ -32,6 +32,7 @@ First, you will need to type "make" into the command prompt.
 This will create the necessary .o files as well as the executable files.
 Then, you type ./master followed by any of the above options. *if no datafile is given, an error message will be prompted*
 Now, the program will run as expected.
+To clean the project, type "make clean".
 
 --------------------------------------------------------------------------------------------------------
 
