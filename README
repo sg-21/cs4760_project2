@@ -1,4 +1,46 @@
-# cs4760_project2
+# Samed Ganibegovic
+# Operating Systems CS4760
+
+# Assignment 2: Concurrent UNIX Processes and shared memory
+# Due: March 1st 2021
+
+--------------------------------------------------------------------------------------------------------
+
+Brief Description: 
+
 The goal of this homework is to become familiar with concurrent processing in Linux using shared memory.  
-The task is fairly simple but the trick is to implement it with multiple processes using shared memory and signals to communicate between processes, 
-and to exercise some control over them.
+
+--------------------------------------------------------------------------------------------------------
+
+Invoking the solution:
+
+master should take in several command line options as follows:
+
+master -h master [-h] [-s i] [-t time] datafile
+
+-h          Describe how the project should be run and then, terminate.
+-s x        Indicate the number of children allowed to exist in the system at the same time.  (Default 20)
+-t time     The time in seconds after which the process will terminate, even if it has not finished.  (Default 100)
+datafile    Input file containing one integer on each line.
+
+
+--------------------------------------------------------------------------------------------------------
+
+How to run the project: 
+
+First, you will need to type "make" into the command prompt.
+This will create the necessary .o files as well as the executable files.
+Then, you type ./master followed by any of the above options. *if no datafile is given, an error message will be prompted*
+Now, the program will run as expected.
+
+--------------------------------------------------------------------------------------------------------
+
+Issues and problems with the program:
+
+
+
+--------------------------------------------------------------------------------------------------------
+
+Link to version control:
+
+
