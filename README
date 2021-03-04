@@ -38,7 +38,11 @@ To clean the project, type "make clean".
 
 Issues and problems with the program:
 
-
+The most obvious issue here is that the program does not run fully. I was not able to complete bin_adder to have the bakery algorithm.
+This led to bigger issues with the code as a whole, and thus I could not finish it.
+I spent extra time on the project to try and figure it out, but I could not get it down.
+I had the project running using a different algorithm, however, since the requirements were for bakery algorithm or no grade for the algorithm at all, 
+I decided to just leave the working code out and turn it in as is.
 
 --------------------------------------------------------------------------------------------------------
 
