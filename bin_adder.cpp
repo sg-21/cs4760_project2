@@ -3,7 +3,7 @@
 #include <unistd.h>
 
 #include "bin_adder.h"
-#include "shared.h"
+#include "same.h"
 
 extern bool choosing[n]; /* Shared Boolean array */  
 extern int number[n]; /* Shared integer array to hold turn number */  
