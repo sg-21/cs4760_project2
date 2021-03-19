@@ -14,31 +14,31 @@
 const int MAX_PROCESSES = 19;
 static int myCount = 0;
 
-//constants
+/*constants*/
 const int maxChild = 20;
 const int maxSecond = 100;
 
 static void usage(std::string);
 using namespace std;
 
-//variables
+/*variables*/
 vector<int> myArray;
 int* num;
 struct SharedItem* node;
 
-//handling 
+/*handling*/
 volatile sig_atomic_t sigIntFlag = 0;
 
 void sigintHandler(int sig){
   sigIntFlag = 1; 
 }
 
-//process data from input file
+/*process data from input file*/
 int processMaster(int numChild, int seconds, string dataFile) {
     signal(SIGINT, sigintHandler);
     bool dead = false;
 
-    //time start
+    /*time start*/
     time_t start;
 
     FILE *fileName;
@@ -58,17 +58,17 @@ int processMaster(int numChild, int seconds, string dataFile) {
     while ((read = getline(&line, &len, fileName)) != -1) {
         int i = atoi(line);
 
-        //line placed in vector
+        /*line placed in vector*/
         myArray.push_back(i);  
     }
 
     fclose(fileName);
     free(line);
 
-    //time start
+    /*time start*/
     start = time(NULL);
 
-    //checks if power of 2
+    /*checks if power of 2*/
     int index = myArray.size();
     int level = 0;
 
@@ -78,17 +78,17 @@ int processMaster(int numChild, int seconds, string dataFile) {
         level++;
 
         do {
-            //padding array with zeros
+            /*padding array with zeros*/
             myArray.push_back(0);
         }
 
         while(pow(2, level) > myArray.size());
     }
 
-    //ready to process file
+    /*ready to process file*/
     int itemCount = myArray.size();
 
-    //read/write
+    /*read/write*/
     if ((key = ftok(Host, 100)) == -1) {
         perror("ftok");
 
@@ -96,7 +96,7 @@ int processMaster(int numChild, int seconds, string dataFile) {
     }
 
     else {
-        //allocate shared memory with size of struct array
+        /*allocate shared memory with size of struct array*/
         int memSize = sizeof(SharedItem) * itemCount;
         shm_id = shmget(key, memSize, IPC_CREAT | IPC_EXCL | 0660);
 
@@ -106,7 +106,7 @@ int processMaster(int numChild, int seconds, string dataFile) {
         }
     }
 
-    //attach shared memory to address space
+    /*attach shared memory to address space*/
     shm_addr = (char*)shmat(shm_id, NULL, 0);
 
     if (!shm_addr) { 
@@ -127,22 +127,22 @@ int processMaster(int numChild, int seconds, string dataFile) {
         node[i].nodeState = idle;
     }
 
-    //start process with bin_adder xx yy
+    /*start process with bin_adder xx yy*/
     bool done = false;
     pid_t waitPID;
     int wstatus;
 
-    //print node
+    /*print node*/
     for(int j=0; j < itemCount; j++)
         cout << "\t" << node[j].value;
         cout << endl;
 
     int nDepth = level;
 
-    //loop until calculation complete
+    /*loop until calculation complete*/
     while(!done) {
 
-        //search for "ready" node by depth
+        /*search for "ready" node by depth*/
         if(!sigIntFlag && !((time(NULL)-start) > seconds) && myCount < numChild && myCount < MAX_PROCESSES) {
 
             for(int i=0;i<nDepth;i++) {
@@ -152,14 +152,14 @@ int processMaster(int numChild, int seconds, string dataFile) {
                     int ncheck2 = pow(2, i) + j;
 
                     if(node[ncheck1].nodeDepth < i && node[ncheck1].ready && node[ncheck2].ready && node[ncheck1].nodeDepth == node[ncheck2].nodeDepth) {
-                        //processing 
+                        /*processing*/ 
                         node[ncheck1].ready = node[ncheck2].ready = false;
-                        //depth of last process
+                        /*depth of last process*/
                         node[ncheck1].nodeDepth = node[ncheck2].nodeDepth = i;
 
                         myCount++;
 
-                        //fork and store PID
+                        /*fork and store PID*/
                         int pid = forkProcess(ncheck1, i);
                         node[ncheck1].pid = node[ncheck2].pid = pid;
                     }
@@ -167,15 +167,15 @@ int processMaster(int numChild, int seconds, string dataFile) {
             }
         }
 
-        //search for returning PID
+        /*search for returning PID*/
         do {
             waitPID = waitpid(-1, &wstatus, WNOHANG | WUNTRACED | WCONTINUED);
 
-            //terminate if Ctrl-c
+            /*terminate if Ctrl-c*/
             if((sigIntFlag || (time(NULL)-start) > seconds) && !dead) {
                 dead = true;
 
-                //sends signal for every child to terminate
+                /*sends signal for every child to terminate*/
                 for(int i=0;i<itemCount;i++) {
                     if(node[i].ready == false)
                         kill(node[i].pid, SIGQUIT);
@@ -194,7 +194,7 @@ int processMaster(int numChild, int seconds, string dataFile) {
                 }
             }
 
-            //no PIDs
+            /*no PIDs*/
             if (waitPID == -1) {
 
                 if(!dead) {
@@ -207,7 +207,7 @@ int processMaster(int numChild, int seconds, string dataFile) {
                     strFinalVal.append(sdep);
                     free(sdep);
 
-                    //success error code
+                    /*success error code*/
                     errno = 0;
 
                     cout << endl;
@@ -220,7 +220,7 @@ int processMaster(int numChild, int seconds, string dataFile) {
             if (WIFEXITED(wstatus) && waitPID > 0) {
                 myCount--;
 
-                //show successful child process
+                /*show successful child process*/
                 for(int j=0; j < itemCount; j++)
                     cout << "\t" << node[j].value << endl;
 
@@ -232,7 +232,7 @@ int processMaster(int numChild, int seconds, string dataFile) {
 
                 free(sdep);
 
-                //add time component 
+                /*add time component*/ 
                 strPID.append(" Exited: ");
 
                 string strFormattedResult = GetTimeFormatted(strPID.c_str());
@@ -267,7 +267,7 @@ int processMaster(int numChild, int seconds, string dataFile) {
         } while (!WIFEXITED(wstatus) && !WIFSIGNALED(wstatus));
     }
 
-    //detach shared memory
+    /*detach shared memory*/
     cout << endl;
     perror("Detatch Shared Memory");
 
@@ -288,7 +288,7 @@ int processMaster(int numChild, int seconds, string dataFile) {
 int forkProcess(int start, int depth) {
         int pid = fork();
 
-        //signal for child process to exit
+        /*signal for child process to exit*/
         if(pid < 0) {
             perror("Could not fork process");
             return EXIT_FAILURE;
@@ -296,7 +296,7 @@ int forkProcess(int start, int depth) {
         
         if(pid == 0) {
 
-            //string version of nItemStart
+            /*string version of nItemStart*/
             int length = snprintf( NULL, 0, "%d", start);
             char* sStart = (char*)malloc( length + 1 );
             snprintf( sStart, length + 1, "%d", start );
@@ -304,7 +304,7 @@ int forkProcess(int start, int depth) {
             string strItemStart = sStart;
             free(sStart);
 
-            //string version of nDepth
+            /*string version of nDepth*/
             length = snprintf( NULL, 0, "%d", depth);
             char* sdep = (char*)malloc( length + 1 );
             snprintf( sdep, length + 1, "%d", depth );
@@ -325,7 +325,7 @@ int forkProcess(int start, int depth) {
 int main(int argc, char* argv[]) {
     int option;
 
-    //default
+    /*default*/
     int numSecond = 100; 
     int numChild = 20; 
 
@@ -360,7 +360,7 @@ int main(int argc, char* argv[]) {
     numChild = min(numChild, maxChild);
     numSecond = min(numSecond, maxSecond);
 
-    //checking for datafile passed
+    /*checking for datafile passed*/
     int index = optind;
 
     if(index < argc) {
@@ -379,7 +379,7 @@ int main(int argc, char* argv[]) {
     return EXIT_FAILURE;
 }
 
-//handle errors through usage
+/*handle errors through usage*/
 static void usage(std::string name) {
     std::cerr << std::endl
               << name << " - master" << std::endl
