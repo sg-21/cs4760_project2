@@ -14,10 +14,6 @@
 const int MAX_PROCESSES = 19;
 static int myCount = 0;
 
-/*constants*/
-const int maxChild = 20;
-const int maxSecond = 100;
-
 static void usage(std::string);
 using namespace std;
 
@@ -124,7 +120,6 @@ int processMaster(int numChild, int seconds, string dataFile) {
         node[i].finished = false;
         node[i].nodeDepth = -1;
         node[i].value = myArray[i];
-        node[i].nodeState = idle;
     }
 
     /*start process with bin_adder xx yy*/
@@ -235,7 +230,7 @@ int processMaster(int numChild, int seconds, string dataFile) {
                 /*add time component*/ 
                 strPID.append(" Exited: ");
 
-                string strFormattedResult = GetTimeFormatted(strPID.c_str());
+                string strFormattedResult = getTimeFormatted();
                 perror(strFormattedResult.c_str());
 
                 if(node[0].pid == waitPID && node[0].nodeDepth==nDepth) {
@@ -320,7 +315,7 @@ int forkProcess(int start, int depth) {
         
         else
             return pid; 
-
+}
 
 int main(int argc, char* argv[]) {
     int option;
