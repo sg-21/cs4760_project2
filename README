@@ -4,6 +4,7 @@
 # Assignment 2: Concurrent UNIX Processes and shared memory
 # Due: March 1st 2021
 
+
 --------------------------------------------------------------------------------------------------------
 
 Brief Description: 
@@ -43,6 +44,17 @@ This led to bigger issues with the code as a whole, and thus I could not finish 
 I spent extra time on the project to try and figure it out, but I could not get it down.
 I had the project running using a different algorithm, however, since the requirements were for bakery algorithm or no grade for the algorithm at all, 
 I decided to just leave the working code out and turn it in as is.
+
+
+*Edit*
+
+I am resubmitting this project for the final time, as I tried to figure out the bakery algorithm.
+I was able to compile something, however, I don't believe this is correct.
+When I had something running before, using a different algorithm, the output was much more advanced.
+However, I decided to go with this as it is something and I tried to incorporate the bakery algorithm. 
+One element I struggled with and could not figure out for whatever reason was the two log files.
+
+*****
 
 --------------------------------------------------------------------------------------------------------
 
