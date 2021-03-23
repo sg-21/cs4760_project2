@@ -1,23 +1,16 @@
-program1 := master
+CC = g++
+CFLAG = -g
 
-src := $(shell find . -name "master*.cpp")
-ob1  := $(patsubst %.cpp, %.o, $(src))
+all: master bin_adder
 
-all: $(program1)
+%.o: %.cpp
+	$(CC) $(CFLAG) -c $< -o $@
 
-$(program1): $(ob1)
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $(program1) $(ob1) $(LDLIBS)
+master: master.o
+	$(CC) $(CFLAG) $< -o $@
 
-program2 := bin_adder
-
-src := $(shell find . -name "bin_adder*.cpp")
-ob2  := $(patsubst %.cpp, %.o, $(src))
-
-all: $(program2)
-
-$(program2): $(ob2)
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $(program2) $(ob2) $(LDLIBS)
+bin_adder: bin_adder.o
+	$(CC) $(CFLAG) $< -o $@
 
 clean:
-		find . -type f ! -iname "*.cpp" ! -iname "*.h" ! -iname "makefile" ! -iname "README" ! -iname "adder_log" ! -iname "output.log" -delete
-
+	rm -f *.o *log master bin_adder
